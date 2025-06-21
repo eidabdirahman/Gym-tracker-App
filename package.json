@@ -2,6 +2,7 @@
   "name": "gym-student-app",
   "version": "1.0.0",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "server": "nodemon --exec ts-node backend/src/server.ts",
     "build": "tsc",
