@@ -14,12 +14,13 @@ export const authUser = async (req: Request, res: Response): Promise<void> => {
     if (user && (await user.matchPassword(password))) {
       const token = generateToken(user._id.toString());
 
-      res.cookie("token", token, {
-        httpOnly: true,           // Can’t be accessed via JS on client
-        secure: process.env.NODE_ENV === "production", // Only over HTTPS
-        sameSite: "strict",
-        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-      });
+    res.cookie("token", token, {
+  httpOnly: true,
+  secure: process.env.NODE_ENV === "production",
+  sameSite: "none", 
+  maxAge: 7 * 24 * 60 * 60 * 1000,
+});
+
 
       res.status(200).json({ message: "Login successful", user });
     } else {
