@@ -65,15 +65,17 @@ export const useUserStore = create<UserStore>()(
       loading: false,
       error: null,
 
-      login: async (data) => {
-        try {
-          set({ loading: true, error: null });
-          const res = await api.post("/login", data);
-          set({ user: res.data, loading: false });
-        } catch (error: any) {
-          set({ error: error.response?.data?.message || "Login failed", loading: false });
-        }
-      },
+     login: async ({ email, password }) => {
+  set({ loading: true, error: null });
+  try {
+    const res = await api.post("/login", { email, password }, { withCredentials: true });
+    set({ user: res.data.user, loading: false });
+  } catch (err: any) {
+    set({ loading: false, error: err.response?.data?.error || "Login failed" });
+    throw err; // <-- this will let the component handle the error in `catch`
+  }
+},
+
 
       register: async (data) => {
         try {
