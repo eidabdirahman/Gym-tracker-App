@@ -1,10 +1,9 @@
 import mongoose from "mongoose";
 import { Request, Response } from "express";
 import User from "../models/Users";
-import { generateToken } from "../utils/tokenGenerator";
+import { generateToken, setAuthCookie } from "../utils/tokenGenerator";
 
 // User authentication (login)
-
 export const authUser = async (req: Request, res: Response): Promise<void> => {
   const { email, password } = req.body;
 
@@ -13,22 +12,16 @@ export const authUser = async (req: Request, res: Response): Promise<void> => {
 
     if (user && (await user.matchPassword(password))) {
       const token = generateToken(user._id.toString());
-
-      res.cookie("token", token, {
-        httpOnly: true,           // Can’t be accessed via JS on client
-        secure: process.env.NODE_ENV === "production", // Only over HTTPS
-        sameSite: "strict",
-        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-      });
-
-      res.status(200).json({ message: "Login successful", user });
-    } else {
-      res.status(401).json({ error: "Invalid email or password" });
+      setAuthCookie(res, token);
+       res.status(200).json({ message: "Login successful", user });
     }
-  } catch {
+
+    res.status(401).json({ error: "Invalid email or password" });
+  } catch (err) {
     res.status(500).json({ error: "Login failed" });
   }
 };
+
 
 
 // Create new user
