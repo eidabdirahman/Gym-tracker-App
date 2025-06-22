@@ -18,7 +18,7 @@ const DashboardHeader = () => {
 
   const handleLogout = async () => {
     await logout();
-    navigate("/singin");
+    navigate("/signin");
   };
 
   return (
