@@ -11,7 +11,7 @@ const DashboardLayout = () => {
 
   useEffect(() => {
     if (!user) {
-      navigate("/singin");
+      navigate("/signin");
     }
   }, [user, navigate]);
 
