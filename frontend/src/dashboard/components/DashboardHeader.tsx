@@ -10,6 +10,7 @@ import {
   DropdownMenuSeparator,
 } from "../../components/ui/dropdown-menu";
 import { LogOut, User as UserIcon } from "lucide-react";
+import ThemeToggle from "../../components/ThemeToggle";
 
 const DashboardHeader = () => {
   const logout = useUserStore((state) => state.logout);
@@ -21,9 +22,12 @@ const DashboardHeader = () => {
     navigate("/signin");
   };
 
-  return (
-    <header className="w-full px-6 py-4 border-b bg-background flex justify-between items-center">
-      <h1 className="text-xl font-semibold">Admin Dashboard</h1>
+ return (
+  <header className="w-full px-6 py-4 border-b bg-background flex justify-between items-center">
+    <h1 className="text-xl font-semibold">Admin Dashboard</h1>
+
+    <div className="flex items-center gap-4">
+      <ThemeToggle /> {/* 🌙 Toggle added here */}
 
       {user && (
         <DropdownMenu>
@@ -49,8 +53,9 @@ const DashboardHeader = () => {
           </DropdownMenuContent>
         </DropdownMenu>
       )}
-    </header>
-  );
-};
+    </div>
+  </header>
+);
+}
 
 export default DashboardHeader;
