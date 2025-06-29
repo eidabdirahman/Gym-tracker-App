@@ -22,40 +22,44 @@ const DashboardHeader = () => {
     navigate("/signin");
   };
 
- return (
-  <header className="w-full px-6 py-4 border-b bg-background flex justify-between items-center">
-    <h1 className="text-xl font-semibold">Admin Dashboard</h1>
+  return (
+    <header className="w-full px-4 sm:px-6 py-4 border-b bg-background flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+      {/* Title */}
+      <h1 className="text-lg sm:text-xl font-semibold whitespace-nowrap">
+        Admin Dashboard
+      </h1>
 
-    <div className="flex items-center gap-4">
-      <ThemeToggle /> {/* 🌙 Toggle added here */}
+      {/* Right-side controls */}
+      <div className="flex items-center gap-3 sm:gap-4 flex-wrap sm:flex-nowrap">
+        <ThemeToggle />
 
-      {user && (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="capitalize">
-              {user.name}
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel className="text-sm">
-              <div>{user.name}</div>
-              <div className="text-xs text-muted-foreground">{user.email}</div>
-            </DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => navigate("/profile")}>
-              <UserIcon className="w-4 h-4 mr-2" />
-              Profile
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={handleLogout}>
-              <LogOut className="w-4 h-4 mr-2" />
-              Logout
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      )}
-    </div>
-  </header>
-);
-}
+        {user && (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" className="capitalize max-w-[150px] truncate">
+                {user.name}
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuLabel className="text-sm">
+                <div className="truncate">{user.name}</div>
+                <div className="text-xs text-muted-foreground truncate">{user.email}</div>
+              </DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={() => navigate("/profile")}>
+                <UserIcon className="w-4 h-4 mr-2" />
+                Profile
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={handleLogout}>
+                <LogOut className="w-4 h-4 mr-2" />
+                Logout
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )}
+      </div>
+    </header>
+  );
+};
 
 export default DashboardHeader;
