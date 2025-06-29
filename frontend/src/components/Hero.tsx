@@ -17,7 +17,7 @@ const Hero = () => {
         <p className="text-base sm:text-xl mb-5 text-yellow-700 dark:text-yellow-300">
           Track your fitness journey with Lions Gate Gym.
         </p>
-        <Link to="/dashboard">
+        <Link to="/contact">
           <Button className="bg-yellow-400 text-black font-bold hover:bg-yellow-300">
             Get Started
           </Button>
