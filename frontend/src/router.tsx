@@ -10,6 +10,7 @@ import AboutUsPage from "./pages/About/About";
 import ContactPage from "./pages/Contact/ContactPage";
 import MemberListScreen from "./dashboard/screens/MemberListScreen";
 import MemberEditScreen from "./dashboard/screens/MemberEditScreen";
+import HomePage from "./pages/HomePage";
 
 // Layouts
 const Layout = () => (
@@ -29,7 +30,7 @@ export const router = createBrowserRouter([
     path: "/",
     element: <Layout />,
     children: [
-      // { path: "", element: <Home /> },
+      { path: "", element: <HomePage /> },
       // { path: "members", element: <MemberPage /> },
       { path: "signin", element: <LoginPage /> },
       {path: "about", element: <AboutUsPage /> },

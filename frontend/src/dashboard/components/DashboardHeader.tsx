@@ -23,9 +23,9 @@ const DashboardHeader = () => {
   };
 
   return (
-    <header className="w-full px-4 sm:px-6 py-4 border-b bg-background flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+    <header className="w-full px-4 sm:px-6 py-4 border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-black flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 transition-colors">
       {/* Title */}
-      <h1 className="text-lg sm:text-xl font-semibold whitespace-nowrap">
+      <h1 className="text-lg sm:text-xl font-semibold text-yellow-700 dark:text-yellow-300 whitespace-nowrap">
         Admin Dashboard
       </h1>
 
@@ -36,13 +36,16 @@ const DashboardHeader = () => {
         {user && (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="outline" className="capitalize max-w-[150px] truncate">
+              <Button
+                variant="outline"
+                className="capitalize max-w-[150px] truncate bg-white dark:bg-black border-gray-300 dark:border-gray-700"
+              >
                 {user.name}
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
+            <DropdownMenuContent align="end" className="w-56">
               <DropdownMenuLabel className="text-sm">
-                <div className="truncate">{user.name}</div>
+                <div className="truncate font-medium">{user.name}</div>
                 <div className="text-xs text-muted-foreground truncate">{user.email}</div>
               </DropdownMenuLabel>
               <DropdownMenuSeparator />

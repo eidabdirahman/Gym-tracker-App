@@ -89,37 +89,37 @@ const MemberEditScreen = () => {
   }
 
   return (
-    <div className="max-w-3xl mx-auto px-6 py-8 space-y-6 bg-white shadow-lg rounded-md">
-      <h1 className="text-3xl font-bold text-gray-800">Edit Member</h1>
+    <div className="max-w-3xl mx-auto px-6 py-8 space-y-6 bg-white dark:bg-black text-gray-800 dark:text-yellow-100 shadow-lg rounded-md transition-colors">
+      <h1 className="text-3xl font-bold text-yellow-700 dark:text-yellow-300">Edit Member</h1>
       {error && <p className="text-red-500">{error}</p>}
 
       <form onSubmit={handleSubmit} className="space-y-8">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <Label>Name</Label>
+            <Label className="text-yellow-800 dark:text-yellow-200">Name</Label>
             <Input name="name" value={formData.name} onChange={handleChange} required />
           </div>
           <div>
-            <Label>Phone</Label>
+            <Label className="text-yellow-800 dark:text-yellow-200">Phone</Label>
             <Input name="phone" value={formData.phone} onChange={handleChange} />
           </div>
           <div className="md:col-span-2">
-            <Label>Address</Label>
+            <Label className="text-yellow-800 dark:text-yellow-200">Address</Label>
             <Input name="address" value={formData.address} onChange={handleChange} />
           </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <Label>Start Date</Label>
+            <Label className="text-yellow-800 dark:text-yellow-200">Start Date</Label>
             <Input type="date" name="StartedDate" value={formData.StartedDate} onChange={handleChange} />
           </div>
           <div>
-            <Label>Expiry Date</Label>
+            <Label className="text-yellow-800 dark:text-yellow-200">Expiry Date</Label>
             <Input type="date" name="expiryDate" value={formData.expiryDate} onChange={handleChange} />
           </div>
           <div>
-            <Label>Gender</Label>
+            <Label className="text-yellow-800 dark:text-yellow-200">Gender</Label>
             <Select
               value={formData.gender || ""}
               onValueChange={(value) =>
@@ -139,7 +139,7 @@ const MemberEditScreen = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <Label>Payment Type</Label>
+            <Label className="text-yellow-800 dark:text-yellow-200">Payment Type</Label>
             <Select
               value={formData.paymentType}
               onValueChange={(value) =>
@@ -159,7 +159,7 @@ const MemberEditScreen = () => {
           </div>
 
           <div>
-            <Label>Payment Method</Label>
+            <Label className="text-yellow-800 dark:text-yellow-200">Payment Method</Label>
             <Select
               value={formData.paymentMethod}
               onValueChange={(value) =>
@@ -178,7 +178,7 @@ const MemberEditScreen = () => {
           </div>
 
           <div className="md:col-span-2">
-            <Label>Price</Label>
+            <Label className="text-yellow-800 dark:text-yellow-200">Price</Label>
             <Input
               type="number"
               name="Price"
@@ -189,12 +189,13 @@ const MemberEditScreen = () => {
           </div>
         </div>
 
-        <div className="flex justify-end gap-4 pt-4 border-t border-gray-200">
+        <div className="flex justify-end gap-4 pt-4 border-t border-gray-200 dark:border-gray-700">
           <Button type="button" variant="ghost" onClick={() => navigate("/dashboard/members")}>
             <ArrowLeft className="w-4 h-4 mr-2" />
+            Cancel
           </Button>
           <Button type="submit" disabled={loading}>
-            {loading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
+            {loading && <Loader2 className="w-4 h-4 animate-spin mr-2" />}
             Update
           </Button>
         </div>

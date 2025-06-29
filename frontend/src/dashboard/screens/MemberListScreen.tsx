@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
 import { Pencil, Trash2, Plus, Loader2, Upload } from "lucide-react";
@@ -17,6 +17,7 @@ import {
 
 const MemberListScreen = () => {
   const navigate = useNavigate();
+  const [searchQuery, setSearchQuery] = useState("");
 
   const {
     members,
@@ -29,7 +30,7 @@ const MemberListScreen = () => {
   } = useMemberStore();
 
   useEffect(() => {
-    fetchMembers(); 
+    fetchMembers();
   }, [fetchMembers]);
 
   const handleAdd = async () => {
@@ -41,47 +42,45 @@ const MemberListScreen = () => {
     }
   };
 
- const handleImport = async (event: React.ChangeEvent<HTMLInputElement>) => {
-  const file = event.target.files?.[0];
-  if (!file) return;
+  const handleImport = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
 
-  try {
-    const reader = new FileReader();
-    reader.onload = async (e) => {
-      const data = new Uint8Array(e.target?.result as ArrayBuffer);
-      const workbook = XLSX.read(data, { type: "array" });
-      const sheet = workbook.Sheets[workbook.SheetNames[0]];
-      const parsedData = XLSX.utils.sheet_to_json(sheet) as any[];
+    try {
+      const reader = new FileReader();
+      reader.onload = async (e) => {
+        const data = new Uint8Array(e.target?.result as ArrayBuffer);
+        const workbook = XLSX.read(data, { type: "array" });
+        const sheet = workbook.Sheets[workbook.SheetNames[0]];
+        const parsedData = XLSX.utils.sheet_to_json(sheet) as any[];
 
-      // ✅ Convert Excel date numbers to date strings and remap headers
-      const fixedData: Partial<Member>[] = parsedData.map((row) => ({
-        name: row.name,
-        gender: row.gender,
-        phone: row.phone?.toString?.(),
-        address: row.address,
-        StartedDate: typeof row.start === "number"
-          ? XLSX.SSF.format("yyyy-mm-dd", row.start)
-          : row.start,
-        expiryDate: typeof row.expires === "number"
-          ? XLSX.SSF.format("yyyy-mm-dd", row.expires)
-          : row.expires,
-        paymentType: row.paymentType,
-        paymentMethod: row.paymentMethod,
-        Price: Number(row.Price) || 0,
-      }));
+        const fixedData: Partial<Member>[] = parsedData.map((row) => ({
+          name: row.name,
+          gender: row.gender,
+          phone: row.phone?.toString?.(),
+          address: row.address,
+          StartedDate:
+            typeof row.start === "number"
+              ? XLSX.SSF.format("yyyy-mm-dd", row.start)
+              : row.start,
+          expiryDate:
+            typeof row.expires === "number"
+              ? XLSX.SSF.format("yyyy-mm-dd", row.expires)
+              : row.expires,
+          paymentType: row.paymentType,
+          paymentMethod: row.paymentMethod,
+          Price: Number(row.Price) || 0,
+        }));
 
-      console.log("✅ Cleaned Excel Data:", fixedData);
-
-      await importMembers(fixedData);
-      toast.success("Members imported from Excel!");
-    };
-    reader.readAsArrayBuffer(file);
-  } catch (error) {
-    console.error("Excel import error:", error);
-    toast.error("Failed to import Excel");
-  }
-};
-
+        await importMembers(fixedData);
+        toast.success("Members imported from Excel!");
+      };
+      reader.readAsArrayBuffer(file);
+    } catch (error) {
+      console.error("Excel import error:", error);
+      toast.error("Failed to import Excel");
+    }
+  };
 
   const handleDelete = async (id: string) => {
     if (confirm("Are you sure?")) {
@@ -91,12 +90,15 @@ const MemberListScreen = () => {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <h1 className="text-2xl font-semibold">Member List</h1>
+    <div className="space-y-8 px-4 py-8 bg-white dark:bg-black min-h-screen transition-colors">
+      {/* Header Actions */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6">
+        <h1 className="text-2xl font-bold text-yellow-700 dark:text-yellow-300">
+          Member List
+        </h1>
 
         <div className="flex flex-col sm:flex-row gap-6">
-          {/* ➕ Add Member Group */}
+          {/* ➕ Add Member */}
           <div className="flex flex-col space-y-1">
             <span className="text-sm font-medium text-muted-foreground">Quick Add</span>
             <Button onClick={handleAdd} className="w-fit">
@@ -105,13 +107,12 @@ const MemberListScreen = () => {
             </Button>
           </div>
 
-          {/* 📥 Import Excel Group */}
+          {/* 📥 Import Excel */}
           <div className="flex flex-col space-y-1">
             <span className="text-sm font-medium text-muted-foreground">Bulk Import</span>
             <div className="relative w-fit">
               <input
                 type="file"
-                id="excel-input"
                 accept=".xlsx, .xls"
                 onChange={handleImport}
                 className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
@@ -127,15 +128,29 @@ const MemberListScreen = () => {
         </div>
       </div>
 
+      {/* 🔍 Search */}
+      <div className="flex justify-end">
+        <input
+          type="text"
+          placeholder="Search members..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="w-full sm:w-64 px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500 dark:bg-black dark:text-white"
+        />
+      </div>
+
+      {/* ⏳ Loading */}
       {loading && (
         <div className="flex justify-center py-6">
           <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
         </div>
       )}
 
+      {/* ❌ Error */}
       {error && <p className="text-red-500">{error}</p>}
 
-      <div className="border rounded-md">
+      {/* 📋 Member Table */}
+      <div className="border rounded-md overflow-x-auto">
         <Table>
           <TableHeader>
             <TableRow>
@@ -151,14 +166,15 @@ const MemberListScreen = () => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {members.length === 0 && (
-              <TableRow>
-                <TableCell colSpan={9} className="text-center text-muted-foreground">
-                  No members found.
-                </TableCell>
-              </TableRow>
-            )}
-            {[...members]
+            {members
+              .filter((m) => {
+                const query = searchQuery.toLowerCase();
+                return (
+                  m.name?.toLowerCase().includes(query) ||
+                  m.phone?.toLowerCase().includes(query) ||
+                  m.address?.toLowerCase().includes(query)
+                );
+              })
               .sort((a, b) => {
                 const now = new Date();
                 const aExpiry = new Date(a.expiryDate);
@@ -169,8 +185,12 @@ const MemberListScreen = () => {
                 if (aExpired && !bExpired) return -1;
                 if (!aExpired && bExpired) return 1;
 
-                const aSoon = !aExpired && (aExpiry.getTime() - now.getTime()) / (1000 * 60 * 60 * 24) <= 5;
-                const bSoon = !bExpired && (bExpiry.getTime() - now.getTime()) / (1000 * 60 * 60 * 24) <= 5;
+                const aSoon =
+                  !aExpired &&
+                  (aExpiry.getTime() - now.getTime()) / (1000 * 60 * 60 * 24) <= 5;
+                const bSoon =
+                  !bExpired &&
+                  (bExpiry.getTime() - now.getTime()) / (1000 * 60 * 60 * 24) <= 5;
 
                 if (aSoon && !bSoon) return -1;
                 if (!aSoon && bSoon) return 1;
@@ -181,7 +201,9 @@ const MemberListScreen = () => {
                 const now = new Date();
                 const expiry = new Date(m.expiryDate);
                 const isExpired = expiry < now;
-                const isExpiringSoon = !isExpired && (expiry.getTime() - now.getTime()) / (1000 * 60 * 60 * 24) <= 5;
+                const isExpiringSoon =
+                  !isExpired &&
+                  (expiry.getTime() - now.getTime()) / (1000 * 60 * 60 * 24) <= 5;
 
                 const rowClass = isExpired
                   ? "bg-red-50 text-red-700"
@@ -195,9 +217,15 @@ const MemberListScreen = () => {
                     <TableCell>{m.gender || "Not specified"}</TableCell>
                     <TableCell>{m.phone}</TableCell>
                     <TableCell>{m.address}</TableCell>
-                    <TableCell>{new Date(m.StartedDate).toLocaleDateString()}</TableCell>
-                    <TableCell>{new Date(m.expiryDate).toLocaleDateString()}</TableCell>
-                    <TableCell>{`${m.paymentType} / ${m.paymentMethod}`}</TableCell>
+                    <TableCell>
+                      {new Date(m.StartedDate).toLocaleDateString()}
+                    </TableCell>
+                    <TableCell>
+                      {new Date(m.expiryDate).toLocaleDateString()}
+                    </TableCell>
+                    <TableCell>
+                      {`${m.paymentType} / ${m.paymentMethod}`}
+                    </TableCell>
                     <TableCell>
                       {m.Price.toLocaleString("en-US", {
                         style: "currency",
@@ -213,7 +241,7 @@ const MemberListScreen = () => {
                             navigate(`/dashboard/members/${m._id}/edit`)
                           }
                         >
-                          <Pencil className="w-4 h-4" />
+                                                   <Pencil className="w-4 h-4" />
                         </Button>
                         <Button
                           size="icon"

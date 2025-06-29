@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { useUserStore } from "../../store/useUserStore";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
-import { Pencil, Trash2, Plus ,Loader2 } from "lucide-react";
+import { Pencil, Trash2, Plus, Loader2 } from "lucide-react";
 import { Button } from "../../components/ui/button";
 import {
   Table,
@@ -30,7 +30,7 @@ const UsersListScreen = () => {
 
   const handleCreateUser = async () => {
     try {
-      await register({ name: "", email: "", password: "",  });
+      await register({ name: "", email: "", password: "" });
       toast.success("User created successfully!");
       fetchUsers();
     } catch {
@@ -46,24 +46,30 @@ const UsersListScreen = () => {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-semibold">User Management</h1>
-        <Button onClick={handleCreateUser}>
+    <div className="space-y-8 px-4 py-8 bg-white dark:bg-black min-h-screen transition-colors">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <h1 className="text-2xl font-bold text-yellow-700 dark:text-yellow-300">
+          User Management
+        </h1>
+        <Button onClick={handleCreateUser} className="bg-yellow-500 text-black hover:bg-yellow-600 font-bold">
           <Plus className="w-4 h-4 mr-2" />
           Register User
         </Button>
       </div>
 
+      {/* Loading */}
       {loading && (
-  <div className="flex justify-center py-6">
-    <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
-  </div>
-)}
+        <div className="flex justify-center py-6">
+          <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
+        </div>
+      )}
 
+      {/* Error */}
       {error && <p className="text-red-500">{error}</p>}
 
-      <div className="border rounded-md">
+      {/* Table */}
+      <div className="border rounded-md overflow-x-auto">
         <Table>
           <TableHeader>
             <TableRow>
@@ -99,9 +105,9 @@ const UsersListScreen = () => {
                 </TableCell>
               </TableRow>
             ))}
-            {users.length === 0 && (
+            {users.length === 0 && !loading && (
               <TableRow>
-                <TableCell colSpan={6} className="text-center text-muted-foreground">
+                <TableCell colSpan={4} className="text-center text-muted-foreground py-6">
                   No users found.
                 </TableCell>
               </TableRow>

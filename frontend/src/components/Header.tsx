@@ -10,33 +10,42 @@ const Header = () => {
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
-    <header className="border-b shadow-sm bg-white dark:bg-gray-900 fixed top-0 w-full z-50">
-      <div className="mx-auto max-w-7xl px-4 py-3 flex justify-between items-center">
-        {/* Logo */}
-        <Link
-          to="/"
-          className="text-lg font-bold tracking-tight text-black dark:text-white"
-        >
-          GymTracker
+    <header className="bg-white dark:bg-black border-b shadow-sm fixed top-0 w-full z-50 transition-colors">
+      <div className="mx-auto max-w-7xl px-4 py-4 flex justify-between items-center">
+        <Link to="/" className="text-2xl font-extrabold text-yellow-500 tracking-tight">
+          Lions Gate Gym
         </Link>
 
         {/* Desktop Nav */}
-        <nav className="hidden md:flex items-center space-x-4">
-          <Link to="/contact">
-            <Button variant="ghost">Contacts</Button>
-          </Link>
+        <nav className="hidden md:flex items-center space-x-6">
           <Link to="/about">
-            <Button variant="ghost">About Us</Button>
+            <Button variant="ghost" className="text-yellow-600 dark:text-yellow-400 hover:text-yellow-700 dark:hover:text-yellow-300">
+              About Us
+            </Button>
           </Link>
-          {user ? (
-            <Link to="/dashboard">
-              <Button variant="outline">Dashboard</Button>
-            </Link>
-          ) : (
-            <Link to="/signin">
-              <Button variant="outline">Login</Button>
-            </Link>
-          )}
+          <Link to="/contact">
+            <Button variant="ghost" className="text-yellow-600 dark:text-yellow-400 hover:text-yellow-700 dark:hover:text-yellow-300">
+              Contacts
+            </Button>
+          </Link>
+          <div className="relative group">
+  {user ? (
+    <Link to="/dashboard">
+      <Button className="bg-yellow-400 text-black hover:bg-yellow-300">
+        Dashboard
+      </Button>
+    </Link>
+  ) : (
+    <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+      <Link to="/signin">
+        <Button className="bg-yellow-400 text-black hover:bg-yellow-300">
+          Login
+        </Button>
+      </Link>
+    </div>
+  )}
+</div>
+
           <ThemeToggle />
         </nav>
 
@@ -44,33 +53,33 @@ const Header = () => {
         <div className="md:hidden flex items-center gap-2">
           <ThemeToggle />
           <Button variant="ghost" size="icon" onClick={() => setMenuOpen(!menuOpen)}>
-            {menuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            {menuOpen ? <X className="w-6 h-6 text-yellow-500" /> : <Menu className="w-6 h-6 text-yellow-500" />}
           </Button>
         </div>
       </div>
 
-      {/* Mobile Dropdown Menu */}
+      {/* Mobile Dropdown */}
       {menuOpen && (
-        <div className="md:hidden px-4 pb-4 space-y-2 bg-white dark:bg-gray-900 border-t">
+        <div className="md:hidden px-4 pb-4 space-y-2 bg-white dark:bg-black border-t">
           <Link to="/contact" onClick={() => setMenuOpen(false)}>
-            <Button variant="ghost" className="w-full justify-start">
+            <Button variant="ghost" className="w-full justify-start text-yellow-600 dark:text-yellow-400 hover:text-yellow-700 dark:hover:text-yellow-300">
               Contacts
             </Button>
           </Link>
           <Link to="/about" onClick={() => setMenuOpen(false)}>
-            <Button variant="ghost" className="w-full justify-start">
+            <Button variant="ghost" className="w-full justify-start text-yellow-600 dark:text-yellow-400 hover:text-yellow-700 dark:hover:text-yellow-300">
               About Us
             </Button>
           </Link>
           {user ? (
             <Link to="/dashboard" onClick={() => setMenuOpen(false)}>
-              <Button variant="outline" className="w-full justify-start">
+              <Button className="w-full justify-start bg-yellow-400 text-black hover:bg-yellow-300">
                 Dashboard
               </Button>
             </Link>
           ) : (
             <Link to="/signin" onClick={() => setMenuOpen(false)}>
-              <Button variant="outline" className="w-full justify-start">
+              <Button className="w-full justify-start bg-yellow-400 text-black hover:bg-yellow-300">
                 Login
               </Button>
             </Link>

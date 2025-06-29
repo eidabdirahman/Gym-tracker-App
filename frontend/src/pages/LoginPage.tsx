@@ -28,15 +28,19 @@ const LoginPage = () => {
   };
 
   return (
-    <section className="min-h-screen flex items-center justify-center bg-gray-50">
-      <Card className="w-full max-w-md shadow-lg">
+    <section className="min-h-screen flex items-center justify-center bg-white dark:bg-black transition-colors px-4">
+      <Card className="w-full max-w-md shadow-xl rounded-xl bg-yellow-50 dark:bg-yellow-950">
         <CardHeader>
-          <CardTitle className="text-center text-xl">Welcome Back</CardTitle>
+          <CardTitle className="text-center text-2xl font-bold text-yellow-700 dark:text-yellow-300">
+            Welcome Back
+          </CardTitle>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-6">
             <div>
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email" className="text-yellow-800 dark:text-yellow-200">
+                Email
+              </Label>
               <Input
                 id="email"
                 type="email"
@@ -44,11 +48,14 @@ const LoginPage = () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
+                className="mt-1"
               />
             </div>
 
             <div>
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password" className="text-yellow-800 dark:text-yellow-200">
+                Password
+              </Label>
               <Input
                 id="password"
                 type="password"
@@ -56,10 +63,15 @@ const LoginPage = () => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
+                className="mt-1"
               />
             </div>
 
-            <Button type="submit" className="w-full" disabled={loading}>
+            <Button
+              type="submit"
+              className="w-full bg-yellow-500 text-black hover:bg-yellow-600 font-bold"
+              disabled={loading}
+            >
               {loading ? "Signing in..." : "Sign In"}
             </Button>
           </form>
