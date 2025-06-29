@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import axios from "axios";
+import { toast } from "react-hot-toast";
 import { MEMBERS_URL } from "../constants";
 
 // Authenticated Axios client
@@ -35,6 +36,7 @@ interface MemberStore {
   addMember: (data: Partial<Member>) => Promise<void>;
   updateMember: (id: string, data: Partial<Member>) => Promise<void>;
   deleteMember: (id: string) => Promise<void>;
+  importMembers: (data: Partial<Member>[]) => Promise<void>; // ✅ new action
 }
 
 export const useMemberStore = create<MemberStore>()(
@@ -101,10 +103,51 @@ export const useMemberStore = create<MemberStore>()(
           set({ error: error.response?.data?.message || "Delete failed" });
         }
       },
+
+importMembers: async (data) => {
+  try {
+    set({ loading: true });
+
+    const enrichedMembers: Member[] = [];
+
+    for (const row of data) {
+      const res = await api.post("/", row);
+
+      const enriched = {
+        ...row,
+        _id: res.data._id,
+        createdAt: res.data.createdAt,
+        updatedAt: res.data.updatedAt,
+        name: row.name ?? "",
+        StartedDate: row.StartedDate ?? "",
+        expiryDate: row.expiryDate ?? "",
+        paymentType: row.paymentType ?? "",
+        paymentMethod: row.paymentMethod ?? "",
+        Price: row.Price ?? 0,
+      };
+
+      enrichedMembers.push(enriched as Member);
+    }
+
+    set((state) => ({
+      members: [...state.members, ...enrichedMembers],
+      loading: false,
+    }));
+
+    toast.success("Excel members imported");
+  } catch (error: any) {
+    set({
+      error: error.response?.data?.message || "Import failed",
+      loading: false,
+    });
+    toast.error("Excel import failed");
+  }
+}
+
     }),
     {
       name: "member-store",
-      partialize: (state) => ({ member: state.member }), // optional: persist only selected member
+      partialize: (state) => ({ member: state.member }),
     }
   )
 );

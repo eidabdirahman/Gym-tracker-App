@@ -14,10 +14,11 @@ export default defineConfig({
     server: {
     proxy: {
       '/api': {
-        target: 'https://gym-tracker-app-iwma.vercel.app', 
+        target: '', 
         changeOrigin: true,
         
       },
     },
   },
 })
+0

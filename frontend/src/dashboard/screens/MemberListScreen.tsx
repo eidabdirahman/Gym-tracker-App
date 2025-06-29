@@ -1,8 +1,10 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
-import { Pencil, Trash2, Plus, Loader2 } from "lucide-react";
+import { Pencil, Trash2, Plus, Loader2, Upload } from "lucide-react";
+import * as XLSX from "xlsx";
 import { useMemberStore } from "../../store/useMemberStore";
+import type { Member } from "../../store/useMemberStore";
 import { Button } from "../../components/ui/button";
 import {
   Table,
@@ -15,27 +17,22 @@ import {
 
 const MemberListScreen = () => {
   const navigate = useNavigate();
+
   const {
     members,
     fetchMembers,
     deleteMember,
+    addMember,
+    importMembers,
     loading,
     error,
   } = useMemberStore();
 
   useEffect(() => {
-    fetchMembers();
+    fetchMembers(); 
   }, [fetchMembers]);
 
-  const handleDelete = async (id: string) => {
-    if (confirm("Are you sure?")) {
-      await deleteMember(id);
-      toast.success("Member deleted");
-    }
-  };
-
   const handleAdd = async () => {
-    const { addMember } = useMemberStore.getState();
     try {
       await addMember({});
       toast.success("Sample member added");
@@ -44,14 +41,90 @@ const MemberListScreen = () => {
     }
   };
 
+ const handleImport = async (event: React.ChangeEvent<HTMLInputElement>) => {
+  const file = event.target.files?.[0];
+  if (!file) return;
+
+  try {
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+      const data = new Uint8Array(e.target?.result as ArrayBuffer);
+      const workbook = XLSX.read(data, { type: "array" });
+      const sheet = workbook.Sheets[workbook.SheetNames[0]];
+      const parsedData = XLSX.utils.sheet_to_json(sheet) as any[];
+
+      // ✅ Convert Excel date numbers to date strings and remap headers
+      const fixedData: Partial<Member>[] = parsedData.map((row) => ({
+        name: row.name,
+        gender: row.gender,
+        phone: row.phone?.toString?.(),
+        address: row.address,
+        StartedDate: typeof row.start === "number"
+          ? XLSX.SSF.format("yyyy-mm-dd", row.start)
+          : row.start,
+        expiryDate: typeof row.expires === "number"
+          ? XLSX.SSF.format("yyyy-mm-dd", row.expires)
+          : row.expires,
+        paymentType: row.paymentType,
+        paymentMethod: row.paymentMethod,
+        Price: Number(row.Price) || 0,
+      }));
+
+      console.log("✅ Cleaned Excel Data:", fixedData);
+
+      await importMembers(fixedData);
+      toast.success("Members imported from Excel!");
+    };
+    reader.readAsArrayBuffer(file);
+  } catch (error) {
+    console.error("Excel import error:", error);
+    toast.error("Failed to import Excel");
+  }
+};
+
+
+  const handleDelete = async (id: string) => {
+    if (confirm("Are you sure?")) {
+      await deleteMember(id);
+      toast.success("Member deleted");
+    }
+  };
+
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <h1 className="text-2xl font-semibold">Member List</h1>
-        <Button onClick={handleAdd}>
-          <Plus className="w-4 h-4 mr-2" />
-          Add Member
-        </Button>
+
+        <div className="flex flex-col sm:flex-row gap-6">
+          {/* ➕ Add Member Group */}
+          <div className="flex flex-col space-y-1">
+            <span className="text-sm font-medium text-muted-foreground">Quick Add</span>
+            <Button onClick={handleAdd} className="w-fit">
+              <Plus className="w-4 h-4 mr-2" />
+              Add Sample Member
+            </Button>
+          </div>
+
+          {/* 📥 Import Excel Group */}
+          <div className="flex flex-col space-y-1">
+            <span className="text-sm font-medium text-muted-foreground">Bulk Import</span>
+            <div className="relative w-fit">
+              <input
+                type="file"
+                id="excel-input"
+                accept=".xlsx, .xls"
+                onChange={handleImport}
+                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+              />
+              <Button asChild variant="outline">
+                <span>
+                  <Upload className="w-4 h-4 mr-2" />
+                  Import from Excel
+                </span>
+              </Button>
+            </div>
+          </div>
+        </div>
       </div>
 
       {loading && (
@@ -78,6 +151,13 @@ const MemberListScreen = () => {
             </TableRow>
           </TableHeader>
           <TableBody>
+            {members.length === 0 && (
+              <TableRow>
+                <TableCell colSpan={9} className="text-center text-muted-foreground">
+                  No members found.
+                </TableCell>
+              </TableRow>
+            )}
             {[...members]
               .sort((a, b) => {
                 const now = new Date();
@@ -147,13 +227,6 @@ const MemberListScreen = () => {
                   </TableRow>
                 );
               })}
-            {members.length === 0 && (
-              <TableRow>
-                <TableCell colSpan={9} className="text-center text-muted-foreground">
-                  No members found.
-                </TableCell>
-              </TableRow>
-            )}
           </TableBody>
         </Table>
       </div>

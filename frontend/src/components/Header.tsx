@@ -15,9 +15,6 @@ const Header = () => {
 
         <div className="flex items-center space-x-4">
           <nav className="space-x-2">
-            <Link to="/members">
-              <Button variant="ghost">Members</Button>
-            </Link>
             <Link to="/contact">
               <Button variant="ghost">Contacts</Button>
             </Link>

@@ -1,4 +1,4 @@
-export const BASE_URL = 'https://gym-tracker-app-iwma.vercel.app';
+export const BASE_URL = '';
 
 export const REPORTS_URL = `${BASE_URL}/api/reports`;
 export const USERS_URL = `${BASE_URL}/api/users`;
