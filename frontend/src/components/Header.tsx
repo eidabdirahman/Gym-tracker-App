@@ -28,23 +28,25 @@ const Header = () => {
               Contacts
             </Button>
           </Link>
+
+          {/* Desktop Login/Dashboard */}
           <div className="relative group">
-  {user ? (
-    <Link to="/dashboard">
-      <Button className="bg-yellow-400 text-black hover:bg-yellow-300">
-        Dashboard
-      </Button>
-    </Link>
-  ) : (
-    <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-      <Link to="/signin">
-        <Button className="bg-yellow-400 text-black hover:bg-yellow-300">
-          Login
-        </Button>
-      </Link>
-    </div>
-  )}
-</div>
+            {user ? (
+              <Link to="/dashboard">
+                <Button className="bg-yellow-400 text-black hover:bg-yellow-300">
+                  Dashboard
+                </Button>
+              </Link>
+            ) : (
+              <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                <Link to="/signin">
+                  <Button className="bg-yellow-400 text-black hover:bg-yellow-300">
+                    Login
+                  </Button>
+                </Link>
+              </div>
+            )}
+          </div>
 
           <ThemeToggle />
         </nav>
@@ -60,17 +62,19 @@ const Header = () => {
 
       {/* Mobile Dropdown */}
       {menuOpen && (
-        <div className="md:hidden px-4 pb-4 space-y-2 bg-white dark:bg-black border-t">
-          <Link to="/contact" onClick={() => setMenuOpen(false)}>
-            <Button variant="ghost" className="w-full justify-start text-yellow-600 dark:text-yellow-400 hover:text-yellow-700 dark:hover:text-yellow-300">
-              Contacts
-            </Button>
-          </Link>
+        <div className="md:hidden px-4 pb-4 space-y-2 bg-white dark:bg-black border-t group">
           <Link to="/about" onClick={() => setMenuOpen(false)}>
             <Button variant="ghost" className="w-full justify-start text-yellow-600 dark:text-yellow-400 hover:text-yellow-700 dark:hover:text-yellow-300">
               About Us
             </Button>
           </Link>
+          <Link to="/contact" onClick={() => setMenuOpen(false)}>
+            <Button variant="ghost" className="w-full justify-start text-yellow-600 dark:text-yellow-400 hover:text-yellow-700 dark:hover:text-yellow-300">
+              Contacts
+            </Button>
+          </Link>
+
+          {/* Mobile Login/Dashboard */}
           {user ? (
             <Link to="/dashboard" onClick={() => setMenuOpen(false)}>
               <Button className="w-full justify-start bg-yellow-400 text-black hover:bg-yellow-300">
@@ -78,11 +82,13 @@ const Header = () => {
               </Button>
             </Link>
           ) : (
-            <Link to="/signin" onClick={() => setMenuOpen(false)}>
-              <Button className="w-full justify-start bg-yellow-400 text-black hover:bg-yellow-300">
-                Login
-              </Button>
-            </Link>
+            <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+              <Link to="/signin" onClick={() => setMenuOpen(false)}>
+                <Button className="w-full justify-start bg-yellow-400 text-black hover:bg-yellow-300">
+                  Login
+                </Button>
+              </Link>
+            </div>
           )}
         </div>
       )}
