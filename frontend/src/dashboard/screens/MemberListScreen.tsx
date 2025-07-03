@@ -162,9 +162,10 @@ const MemberListScreen = () => {
               <TableHead>Expires</TableHead>
               <TableHead>Payment</TableHead>
               <TableHead>Price</TableHead>
+              <TableHead>Discount</TableHead>
               <TableHead className="text-right">Actions</TableHead>
             </TableRow>
-          </TableHeader>
+          </TableHeader>  
           <TableBody>
             {members
               .filter((m) => {
@@ -228,6 +229,12 @@ const MemberListScreen = () => {
                     </TableCell>
                     <TableCell>
                       {m.Price.toLocaleString("en-US", {
+                        style: "currency",
+                        currency: "USD",
+                      })}
+                    </TableCell>
+                    <TableCell>
+                       {m.Discount.toLocaleString("en-US", {
                         style: "currency",
                         currency: "USD",
                       })}

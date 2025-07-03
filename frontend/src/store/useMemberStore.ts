@@ -21,6 +21,7 @@ export interface Member {
   paymentType: string;
   paymentMethod: string;
   Price: number;
+  Discount: number;
   createdAt: string;
   updatedAt: string;
 }
@@ -36,7 +37,7 @@ interface MemberStore {
   addMember: (data: Partial<Member>) => Promise<void>;
   updateMember: (id: string, data: Partial<Member>) => Promise<void>;
   deleteMember: (id: string) => Promise<void>;
-  importMembers: (data: Partial<Member>[]) => Promise<void>; // ✅ new action
+  importMembers: (data: Partial<Member>[]) => Promise<void>;
 }
 
 export const useMemberStore = create<MemberStore>()(
@@ -124,6 +125,7 @@ importMembers: async (data) => {
         paymentType: row.paymentType ?? "",
         paymentMethod: row.paymentMethod ?? "",
         Price: row.Price ?? 0,
+        Discount: row.Discount ?? 0,
       };
 
       enrichedMembers.push(enriched as Member);

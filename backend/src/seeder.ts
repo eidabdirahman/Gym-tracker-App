@@ -48,6 +48,7 @@ const seedDB = async () => {
         paymentType: "monthly",
         paymentMethod: "zaad",
         Price: 25,
+        Discount: 0,
       },
       {
         name: "Mohamed Ali",
@@ -59,6 +60,7 @@ const seedDB = async () => {
         paymentType: "yearly",
         paymentMethod: "Edahab",
         Price: 25,
+        Discount: 0,
       },
     ];
 

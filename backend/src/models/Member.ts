@@ -10,6 +10,7 @@ export interface IMember extends Document {
   paymentType: string;
   paymentMethod: string;
   Price: number;
+  Discount?: number;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -25,6 +26,7 @@ const memberSchema = new Schema<IMember>(
     paymentType: { type: String, required: true },
     paymentMethod: { type: String, required: true },
     Price: { type: Number, required: true },
+    Discount: { type: Number, default: 0 },
   },
   {
     timestamps: true,

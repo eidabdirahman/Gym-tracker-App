@@ -29,6 +29,7 @@ const MemberEditScreen = () => {
     paymentType: string;
     paymentMethod: string;
     Price: number;
+    Discount: number;
   }>({
     name: "",
     phone: "",
@@ -39,6 +40,7 @@ const MemberEditScreen = () => {
     paymentType: "",
     paymentMethod: "",
     Price: 0,
+    Discount: 0,
   });
 
   useEffect(() => {
@@ -54,9 +56,10 @@ const MemberEditScreen = () => {
         StartedDate: member.StartedDate.slice(0, 10),
         expiryDate: member.expiryDate.slice(0, 10),
         gender: member.gender,
-        paymentType: member.paymentType || "",
-        paymentMethod: member.paymentMethod || "",
+        paymentType: member.paymentType?.toLowerCase() || "",
+        paymentMethod: member.paymentMethod?.toLowerCase() || "",
         Price: member.Price,
+        Discount: member.Discount || 0,
       });
     }
   }, [member]);
@@ -67,7 +70,7 @@ const MemberEditScreen = () => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: name === "Price" ? Number(value) : value,
+      [name]: name === "Price" || name === "Discount" ? Number(value) : value,
     }));
   };
 
@@ -94,29 +97,31 @@ const MemberEditScreen = () => {
       {error && <p className="text-red-500">{error}</p>}
 
       <form onSubmit={handleSubmit} className="space-y-8">
+        {/* Basic Info */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
             <Label className="text-yellow-800 dark:text-yellow-200">Name</Label>
-            <Input name="name" value={formData.name} onChange={handleChange} required />
+            <Input className="w-full" name="name" value={formData.name} onChange={handleChange} required />
           </div>
           <div>
             <Label className="text-yellow-800 dark:text-yellow-200">Phone</Label>
-            <Input name="phone" value={formData.phone} onChange={handleChange} />
+            <Input className="w-full" name="phone" value={formData.phone} onChange={handleChange} />
           </div>
           <div className="md:col-span-2">
             <Label className="text-yellow-800 dark:text-yellow-200">Address</Label>
-            <Input name="address" value={formData.address} onChange={handleChange} />
+            <Input className="w-full" name="address" value={formData.address} onChange={handleChange} />
           </div>
         </div>
 
+        {/* Dates & Gender */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
             <Label className="text-yellow-800 dark:text-yellow-200">Start Date</Label>
-            <Input type="date" name="StartedDate" value={formData.StartedDate} onChange={handleChange} />
+            <Input className="w-full" type="date" name="StartedDate" value={formData.StartedDate} onChange={handleChange} />
           </div>
           <div>
             <Label className="text-yellow-800 dark:text-yellow-200">Expiry Date</Label>
-            <Input type="date" name="expiryDate" value={formData.expiryDate} onChange={handleChange} />
+            <Input className="w-full" type="date" name="expiryDate" value={formData.expiryDate} onChange={handleChange} />
           </div>
           <div>
             <Label className="text-yellow-800 dark:text-yellow-200">Gender</Label>
@@ -137,6 +142,7 @@ const MemberEditScreen = () => {
           </div>
         </div>
 
+        {/* Payment Info */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
             <Label className="text-yellow-800 dark:text-yellow-200">Payment Type</Label>
@@ -171,8 +177,8 @@ const MemberEditScreen = () => {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="cash">Cash</SelectItem>
-                <SelectItem value="ZAAD">ZAAD</SelectItem>
-                <SelectItem value="Edahab">Edahab</SelectItem>
+                <SelectItem value="zaad">ZAAD</SelectItem>
+                <SelectItem value="edahab">Edahab</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -180,6 +186,7 @@ const MemberEditScreen = () => {
           <div className="md:col-span-2">
             <Label className="text-yellow-800 dark:text-yellow-200">Price</Label>
             <Input
+              className="w-full"
               type="number"
               name="Price"
               value={formData.Price}
@@ -187,8 +194,20 @@ const MemberEditScreen = () => {
               required
             />
           </div>
+          <div className="md:col-span-2">
+            <Label className="text-yellow-800 dark:text-yellow-200">Discount</Label>
+            <Input
+              className="w-full"
+              type="number"
+              name="Discount"
+              value={formData.Discount}
+              onChange={handleChange}
+              required
+            />
+          </div>
         </div>
 
+        {/* Actions */}
         <div className="flex justify-end gap-4 pt-4 border-t border-gray-200 dark:border-gray-700">
           <Button type="button" variant="ghost" onClick={() => navigate("/dashboard/members")}>
             <ArrowLeft className="w-4 h-4 mr-2" />

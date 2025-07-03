@@ -70,6 +70,7 @@ export const updateMember = async (req: Request, res: Response): Promise<void> =
       paymentType,
       paymentMethod,
       Price,
+      Discount,
     } = req.body;
 
     member.name = name ?? member.name;
@@ -81,6 +82,7 @@ export const updateMember = async (req: Request, res: Response): Promise<void> =
     member.paymentType = paymentType ?? member.paymentType;
     member.paymentMethod = paymentMethod ?? member.paymentMethod;
     member.Price = Price ?? member.Price;
+    member.Discount = req.body.Discount ?? member.Discount; 
 
     const updated = await member.save();
     res.status(200).json(updated);
