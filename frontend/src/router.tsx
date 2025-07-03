@@ -11,6 +11,7 @@ import ContactPage from "./pages/Contact/ContactPage";
 import MemberListScreen from "./dashboard/screens/MemberListScreen";
 import MemberEditScreen from "./dashboard/screens/MemberEditScreen";
 import HomePage from "./pages/HomePage";
+import ProfileScreen from "./dashboard/screens/UserProfileScreen";
 
 // Layouts
 const Layout = () => (
@@ -47,6 +48,7 @@ export const router = createBrowserRouter([
       // { path: "members/:id/edit", element: <MemberEdit /> },
         {path: "users", element: <UsersListScreen /> },
         {path: "users/:id/edit", element: <UserEditScreen /> },
+        {path: "profile", element: <ProfileScreen/> },
         {path: "members", element: <MemberListScreen /> },
         {path: "members/:id/edit", element: <MemberEditScreen /> },
     ],

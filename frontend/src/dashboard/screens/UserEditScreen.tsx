@@ -2,8 +2,6 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useUserStore } from "../../store/useUserStore";
 import { toast } from "react-hot-toast";
-
-// UI Components from your library
 import { Input } from "../../components/ui/input";
 import { Label } from "../../components/ui/label";
 import { Button } from "../../components/ui/button";
@@ -22,14 +20,19 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../../components/ui/select";
-
-// Icons
 import { Loader2, ArrowLeft } from "lucide-react";
 
 const UserEditScreen = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { user, getUserDetails, updateUser, loading, error } = useUserStore();
+
+  const {
+    selectedUser,
+    getUserDetails,
+    updateUser,
+    loading,
+    error,
+  } = useUserStore();
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -42,12 +45,12 @@ const UserEditScreen = () => {
   }, [id, getUserDetails]);
 
   useEffect(() => {
-    if (user) {
-      setName(user.name || "");
-      setEmail(user.email || "");
-      setRole(user.role || "admin");
+    if (selectedUser) {
+      setName(selectedUser.name || "");
+      setEmail(selectedUser.email || "");
+      setRole(selectedUser.role || "admin");
     }
-  }, [user]);
+  }, [selectedUser]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -63,7 +66,6 @@ const UserEditScreen = () => {
 
   return (
     <div className="space-y-8 px-4 py-8 bg-white dark:bg-black min-h-screen transition-colors">
-      {/* Header */}
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold text-yellow-700 dark:text-yellow-300">
           Edit User
@@ -74,22 +76,19 @@ const UserEditScreen = () => {
         </Button>
       </div>
 
-      {/* Loading State */}
-      {loading && !user && (
+      {loading && !selectedUser && (
         <div className="flex justify-center py-6">
           <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
         </div>
       )}
 
-      {/* Error State */}
       {error && (
         <div className="flex justify-center py-6">
-            <p className="text-red-500 bg-red-100 dark:bg-red-900/20 p-4 rounded-md">{error}</p>
+          <p className="text-red-500 bg-red-100 dark:bg-red-900/20 p-4 rounded-md">{error}</p>
         </div>
       )}
 
-      {/* Form */}
-      {user && (
+      {selectedUser && (
         <Card className="max-w-2xl mx-auto">
           <form onSubmit={handleSubmit}>
             <CardHeader>
@@ -135,7 +134,11 @@ const UserEditScreen = () => {
               </div>
             </CardContent>
             <CardFooter>
-              <Button type="submit" disabled={loading} className="bg-yellow-500 text-black hover:bg-yellow-600 font-bold">
+              <Button
+                type="submit"
+                disabled={loading}
+                className="bg-yellow-500 text-black hover:bg-yellow-600 font-bold"
+              >
                 {loading ? (
                   <>
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />

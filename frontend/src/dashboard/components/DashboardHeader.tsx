@@ -49,7 +49,7 @@ const DashboardHeader = () => {
                 <div className="text-xs text-muted-foreground truncate">{user.email}</div>
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => navigate("/profile")}>
+              <DropdownMenuItem onClick={() => navigate("/dashboard/profile")}>
                 <UserIcon className="w-4 h-4 mr-2" />
                 Profile
               </DropdownMenuItem>

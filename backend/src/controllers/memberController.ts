@@ -24,6 +24,39 @@ export const createMember = async (_req: Request, res: Response): Promise<void> 
 
 };
 
+// Bulk import members from JSON payload
+export const importMembers = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const members = req.body;
+
+    if (!Array.isArray(members) || members.length === 0) {
+      res.status(400).json({ error: "Invalid or empty member list" });
+      return;
+    }
+
+    // Optional: Validate required fields
+    const sanitized = members.map((m) => ({
+      name: m.name?.toString().trim() || "Unnamed",
+      phone: m.phone?.toString() || "",
+      address: m.address?.toString() || "",
+      StartedDate: new Date(m.StartedDate),
+      expiryDate: new Date(m.expiryDate),
+      gender: m.gender === "female" ? "female" : "male",
+      paymentType: m.paymentType?.toLowerCase() || "monthly",
+      paymentMethod: m.paymentMethod?.toLowerCase() || "cash",
+      Price: Number(m.Price) || 0,
+      Discount: Number(m.Discount) || 0,
+    }));
+
+    const inserted = await Member.insertMany(sanitized);
+    res.status(201).json({ message: "Members imported successfully", count: inserted.length });
+  } catch (error: any) {
+    console.error("❌ Import error:", error);
+    res.status(500).json({ error: error.message || "Failed to import members" });
+  }
+};
+
+
 // Get all members
 export const getAllMembers = async (_req: Request, res: Response): Promise<void> => {
   try {

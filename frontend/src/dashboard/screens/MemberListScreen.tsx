@@ -43,44 +43,70 @@ const MemberListScreen = () => {
   };
 
   const handleImport = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
+  const file = event.target.files?.[0];
+  if (!file) return;
 
-    try {
-      const reader = new FileReader();
-      reader.onload = async (e) => {
-        const data = new Uint8Array(e.target?.result as ArrayBuffer);
-        const workbook = XLSX.read(data, { type: "array" });
-        const sheet = workbook.Sheets[workbook.SheetNames[0]];
-        const parsedData = XLSX.utils.sheet_to_json(sheet) as any[];
+  try {
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+      const data = new Uint8Array(e.target?.result as ArrayBuffer);
+      const workbook = XLSX.read(data, { type: "array" });
+      const sheet = workbook.Sheets[workbook.SheetNames[0]];
+      const parsedData = XLSX.utils.sheet_to_json(sheet) as any[];
 
-        const fixedData: Partial<Member>[] = parsedData.map((row) => ({
-          name: row.name,
-          gender: row.gender,
-          phone: row.phone?.toString?.(),
-          address: row.address,
-          StartedDate:
-            typeof row.start === "number"
-              ? XLSX.SSF.format("yyyy-mm-dd", row.start)
-              : row.start,
-          expiryDate:
-            typeof row.expires === "number"
-              ? XLSX.SSF.format("yyyy-mm-dd", row.expires)
-              : row.expires,
-          paymentType: row.paymentType,
-          paymentMethod: row.paymentMethod,
-          Price: Number(row.Price) || 0,
-        }));
+      const formattedData: Partial<Member>[] = parsedData.map((row) => ({
+        name: row.name?.toString().trim() || "",
+        gender: row.gender?.toLowerCase() === "female" ? "female" : "male",
+        phone: row.phone?.toString?.(),
+        address: row.address?.toString() || "",
+        StartedDate:
+          typeof row.start === "number"
+            ? XLSX.SSF.format("yyyy-mm-dd", row.start)
+            : row.start,
+        expiryDate:
+          typeof row.expires === "number"
+            ? XLSX.SSF.format("yyyy-mm-dd", row.expires)
+            : row.expires,
+        paymentType: row.paymentType?.toLowerCase() || "",
+        paymentMethod: row.paymentMethod?.toLowerCase() || "",
+        Price: Number(row.Price) || 0,
+        Discount: Number(row.Discount) || 0,
+      }));
 
-        await importMembers(fixedData);
-        toast.success("Members imported from Excel!");
-      };
-      reader.readAsArrayBuffer(file);
-    } catch (error) {
-      console.error("Excel import error:", error);
-      toast.error("Failed to import Excel");
-    }
-  };
+      // Get existing members from the store
+      const existing = useMemberStore.getState().members;
+
+      // Filter out duplicates based on name + phone
+      const uniqueData = formattedData.filter((row) => {
+        return !existing.some(
+          (m) =>
+            m.name?.toLowerCase() === row.name?.toLowerCase() &&
+            m.phone === row.phone
+        );
+      });
+
+      const skippedCount = formattedData.length - uniqueData.length;
+
+      if (uniqueData.length === 0) {
+        toast.error("All rows already exist");
+        return;
+      }
+
+      await importMembers(uniqueData);
+
+      toast.success(`Imported ${uniqueData.length} new members`);
+      if (skippedCount > 0) {
+        toast.error(`${skippedCount} duplicate rows skipped`);
+      }
+    };
+    reader.readAsArrayBuffer(file);
+  } catch (error) {
+    console.error("Excel import error:", error);
+    toast.error("Failed to import Excel");
+  }
+};
+
+
 
   const handleDelete = async (id: string) => {
     if (confirm("Are you sure?")) {
@@ -165,7 +191,7 @@ const MemberListScreen = () => {
               <TableHead>Discount</TableHead>
               <TableHead className="text-right">Actions</TableHead>
             </TableRow>
-          </TableHeader>  
+          </TableHeader>
           <TableBody>
             {members
               .filter((m) => {
@@ -234,7 +260,7 @@ const MemberListScreen = () => {
                       })}
                     </TableCell>
                     <TableCell>
-                       {m.Discount.toLocaleString("en-US", {
+                      {m.Discount.toLocaleString("en-US", {
                         style: "currency",
                         currency: "USD",
                       })}
@@ -244,11 +270,11 @@ const MemberListScreen = () => {
                         <Button
                           size="icon"
                           variant="ghost"
-                          onClick={() =>
+                                                  onClick={() =>
                             navigate(`/dashboard/members/${m._id}/edit`)
                           }
                         >
-                                                   <Pencil className="w-4 h-4" />
+                          <Pencil className="w-4 h-4" />
                         </Button>
                         <Button
                           size="icon"

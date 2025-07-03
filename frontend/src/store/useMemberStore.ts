@@ -4,7 +4,6 @@ import axios from "axios";
 import { toast } from "react-hot-toast";
 import { MEMBERS_URL } from "../constants";
 
-// Authenticated Axios client
 const api = axios.create({
   baseURL: MEMBERS_URL,
   withCredentials: true,
@@ -105,38 +104,42 @@ export const useMemberStore = create<MemberStore>()(
         }
       },
 
-importMembers: async (data) => {
+      importMembers: async (data) => {
   try {
     set({ loading: true });
 
-    const enrichedMembers: Member[] = [];
+    const validRows = data.filter(
+      (row) =>
+        row.name &&
+        row.StartedDate &&
+        row.expiryDate &&
+        row.paymentType &&
+        row.paymentMethod
+    );
 
-    for (const row of data) {
-      const res = await api.post("/", row);
-
-      const enriched = {
-        ...row,
-        _id: res.data._id,
-        createdAt: res.data.createdAt,
-        updatedAt: res.data.updatedAt,
-        name: row.name ?? "",
-        StartedDate: row.StartedDate ?? "",
-        expiryDate: row.expiryDate ?? "",
-        paymentType: row.paymentType ?? "",
-        paymentMethod: row.paymentMethod ?? "",
-        Price: row.Price ?? 0,
-        Discount: row.Discount ?? 0,
-      };
-
-      enrichedMembers.push(enriched as Member);
+    if (validRows.length === 0) {
+      toast.error("No valid rows to import");
+      set({ loading: false });
+      return;
     }
 
-    set((state) => ({
-      members: [...state.members, ...enrichedMembers],
-      loading: false,
-    }));
+    const res = await api.post("/import", validRows);
 
-    toast.success("Excel members imported");
+    const { insertedCount, skippedCount, skipped } = res.data;
+
+    // Refresh member list after import
+    const refreshed = await api.get("/");
+    set({ members: refreshed.data, loading: false });
+
+    // Show feedback
+    if (insertedCount > 0) {
+      toast.success(` Imported ${insertedCount} new member${insertedCount > 1 ? "s" : ""}`);
+    }
+
+    if (skippedCount > 0) {
+      toast.error(` Skipped ${skippedCount} duplicate entr${skippedCount > 1 ? "ies" : "y"}`);
+      console.table(skipped); // Optional: log skipped entries
+    }
   } catch (error: any) {
     set({
       error: error.response?.data?.message || "Import failed",
@@ -144,7 +147,7 @@ importMembers: async (data) => {
     });
     toast.error("Excel import failed");
   }
-}
+},
 
     }),
     {

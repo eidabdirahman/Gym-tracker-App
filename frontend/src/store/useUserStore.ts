@@ -42,7 +42,8 @@ interface UpdateUserData {
 }
 
 interface UserStore {
-  user: User | null;
+  user: User | null; // logged-in user
+  selectedUser: User | null; // user being edited by admin
   users: User[];
   loading: boolean;
   error: string | null;
@@ -61,21 +62,21 @@ export const useUserStore = create<UserStore>()(
   persist(
     (set) => ({
       user: null,
+      selectedUser: null,
       users: [],
       loading: false,
       error: null,
 
-     login: async ({ email, password }) => {
-  set({ loading: true, error: null });
-  try {
-    const res = await api.post("/login", { email, password }, { withCredentials: true });
-    set({ user: res.data.user, loading: false });
-  } catch (err: any) {
-    set({ loading: false, error: err.response?.data?.error || "Login failed" });
-    throw err; // <-- this will let the component handle the error in `catch`
-  }
-},
-
+      login: async ({ email, password }) => {
+        set({ loading: true, error: null });
+        try {
+          const res = await api.post("/login", { email, password });
+          set({ user: res.data.user, loading: false });
+        } catch (err: any) {
+          set({ loading: false, error: err.response?.data?.error || "Login failed" });
+          throw err;
+        }
+      },
 
       register: async (data) => {
         try {
@@ -97,14 +98,15 @@ export const useUserStore = create<UserStore>()(
       },
 
       updateProfile: async (data) => {
-        try {
-          set({ loading: true, error: null });
-          const res = await api.put("/profile", data);
-          set({ user: res.data, loading: false });
-        } catch (error: any) {
-          set({ error: error.response?.data?.message || "Update failed", loading: false });
-        }
-      },
+  try {
+    set({ loading: true, error: null });
+    const res = await api.put("/profile", data); 
+    set({ user: res.data, loading: false });
+  } catch (error: any) {
+    set({ error: error.response?.data?.message || "Update failed", loading: false });
+  }
+},
+
 
       fetchUsers: async () => {
         try {
@@ -131,7 +133,7 @@ export const useUserStore = create<UserStore>()(
         try {
           set({ loading: true });
           const res = await api.get(`/${id}`);
-          set({ user: res.data, loading: false });
+          set({ selectedUser: res.data, loading: false }); // ✅ separate from logged-in user
         } catch (error: any) {
           set({ error: error.response?.data?.message || "Fetch failed", loading: false });
         }
@@ -151,8 +153,8 @@ export const useUserStore = create<UserStore>()(
       },
     }),
     {
-      name: "user-store", // localStorage key
-      partialize: (state) => ({ user: state.user }), // Only persist user session
+      name: "user-store",
+      partialize: (state) => ({ user: state.user }), 
     }
   )
 );
